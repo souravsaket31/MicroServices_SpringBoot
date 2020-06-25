@@ -1,4 +1,4 @@
-package com.sourav.rest.webservice.restfulwebservice;
+package com.sourav.rest.webservices.restfulwebservices;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

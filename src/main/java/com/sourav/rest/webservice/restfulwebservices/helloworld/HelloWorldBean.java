@@ -1,4 +1,4 @@
-package com.sourav.rest.webservice.restfulwebservice;
+package com.sourav.rest.webservices.restfulwebservices.helloworld;
 
 public class HelloWorldBean {
 	private String message;
@@ -15,7 +15,7 @@ public class HelloWorldBean {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	
+
 	public String getMessage() {
 		return message;
 	}
