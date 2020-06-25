@@ -22,32 +22,34 @@ public class UserResource {
 
 	@Autowired
 	UserDaoService service;
-	
+
 	@GetMapping("/users")
-	public List<User> retieveAllusers()
-	{
-	
+	public List<User> retieveAllusers() {
+
 		return service.findAll();
 	}
-	
+
 	@GetMapping("/users/{id}")
-	public User retieveUser(@PathVariable int id)
-	{
-	
-		return service.findOne(id);
+	public User retrieveUser(@PathVariable int id) {
+
+		User user = service.findOne(id);
+
+		if (user == null)
+			throw new UserNotFoundException("id - " + id);
+
+		return user;
 	}
-	
-	 // input - details of user
-	 // output - CREATED & Return the created URI
-	 @PostMapping("/users")
-	 public ResponseEntity<User> createUser(@RequestBody User user){
-	 User savedUser = service.save(user);
-	 
-	 URI location = 
-			 ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId()).toUri();
-	 
-	 
-	 return ResponseEntity.created(location).build();
-	 } 
-	
+
+	// input - details of user
+	// output - CREATED & Return the created URI
+	@PostMapping("/users")
+	public ResponseEntity<User> createUser(@RequestBody User user) {
+		User savedUser = service.save(user);
+
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId())
+				.toUri();
+
+		return ResponseEntity.created(location).build();
+	}
+
 }
