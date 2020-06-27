@@ -1,10 +1,17 @@
 
 package com.sourav.rest.webservices.restfulwebservices.user;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.net.URI;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,26 +32,35 @@ public class UserResource {
 	UserDaoService service;
 
 	@GetMapping("/users")
-	public List<User> retieveAllusers() {
+	public List<User> retrieveAllusers() {
 
 		return service.findAll();
 	}
 
 	@GetMapping("/users/{id}")
-	public User retrieveUser(@PathVariable int id) {
-
+	public EntityModel<User> retrieveUser(@PathVariable int id) {
 		User user = service.findOne(id);
 
 		if (user == null)
-			throw new UserNotFoundException("id - " + id);
+			throw new UserNotFoundException("id-" + id);
 
-		return user;
+		// "all-users", SERVER_PATH + "/users"
+		// retrieveAllUsers
+		EntityModel<User> resource = EntityModel.of(user);
+
+		WebMvcLinkBuilder linkTo = linkTo(methodOn(this.getClass()).retrieveAllusers());
+
+		resource.add(linkTo.withRel("all-users"));
+
+		// HATEOAS
+
+		return resource;
 	}
 
 	// input - details of user
 	// output - CREATED & Return the created URI
 	@PostMapping("/users")
-	public ResponseEntity<User> createUser(@RequestBody User user) {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 		User savedUser = service.save(user);
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(savedUser.getId())
@@ -52,7 +68,7 @@ public class UserResource {
 
 		return ResponseEntity.created(location).build();
 	}
-	
+
 	@DeleteMapping("/users/{id}")
 	public void deleteOneUser(@PathVariable int id) {
 
@@ -61,7 +77,12 @@ public class UserResource {
 		if (user == null)
 			throw new UserNotFoundException("id - " + id);
 
-		
 	}
+
+	//
+	// input - details of user
+	// output - CREATED & Return the created URI
+
+	// HATEOAS
 
 }
